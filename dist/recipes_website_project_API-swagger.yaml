@@ -1,6 +1,9 @@
 openapi: 3.0.0
 servers:
   # Added by API Auto Mocking Plugin
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/kerendian/recipes_website_project/1.0.0
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/lielbin1/API/1.0.0
 info:
@@ -96,24 +99,33 @@ paths:
           description: bad input parameter
       
           
-  /recipes/recipeId:
+  /recipes/{recipeId}:
     get:
       tags:
       - /recipes/recipeId
       summary: get a detail of recipe
       description: A json object contains the preview details about this recipe
       operationId: DetailRecipe
-
+      parameters:
+        - name: recipeId
+          in: path
+          description: ID of recipe to return
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
-          description: A detail of a recipe
+          description: recipeId recipe object
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DetailRecipe'
+                  $ref: '#/components/schemas/Recipe'
         '400':
+          description: bad input parameter
+        '404':
           description: bad input parameter
           
   /recipes/guest/search:
@@ -124,37 +136,43 @@ paths:
       description: A json object contains details about the recipes
       parameters:
         - in: query
-          name: Recipes name
-          description: Recipes name that the user want to search, the user can filter by cuisine, diet and 
-          required: true
+          name: query
+          description: Recipes name that the user want to search
+          required: false
           schema:
             type: string
         - in: query
-          name: number of recipes
+          name: number
           description: number of recipes to show after the search, the options are 5 10 15 and the default value is 5
           required: false
           schema:
             type: integer
-            format: int32
+            format: int64
             minimum: 5
         - in: query
-          name: Recipes diet
+          name: diet
           description: list of categories diet that the user can filter by them
           required: false
           schema:
             type: string
         - in: query
-          name: Recipes cuisine
+          name: cuisine
           description: list of categories cuisine that the user can filter by them
           required: false
           schema:
             type: string 
         - in: query
-          name: Recipes intolerance
+          name: intolerance
           description: list of categories intolerance that the user can filter by them
           required: false
           schema:
-            type: string            
+            type: string  
+        - in: query
+          name: sort
+          description: sort options to sort the search results by time or popularity
+          required: false
+          schema:
+            type: string 
       operationId: searchRecipes
       responses:
         '200':
@@ -164,19 +182,26 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DetailRecipe'
+                  $ref: '#/components/schemas/Recipe'
         '400':
           description: bad input parameter 
 
           
-  /recipes/FullRecipeDetailsAPI/recipe_id:
+  /recipes/FullRecipeDetailsAPI/{recipe_id}:
     get:
       tags:
       - /recipes/FullRecipeDetailsAPI/recipe_id
       summary: get a full details of recipe in the spooncular API
       description: A json object contains all the details about this recipe
       operationId: FullDetailRecipeAPI
-
+      parameters:
+        - name: recipe_id
+          in: path
+          description: ID of recipe to return the full details for.
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: A full details of a recipe in the spooncular API
@@ -190,14 +215,21 @@ paths:
           description: bad input parameter     
     
            
-  /users/FullRecipeDetailsDB/recipe_id:
+  /users/FullRecipeDetailsDB/{recipe_id}:
     get:
       tags:
       - /users/FullRecipeDetailsDB/recipe_id
       summary: get a full details of recipe in the DB
       description: A json object contains all the details about this recipe
       operationId: FullDetailsRecipe
-
+      parameters:
+        - name: recipe_id
+          in: path
+          description: ID of recipe to return full details for.
+          required: true
+          schema:
+            type: integer
+            format: int64
       responses:
         '200':
           description: A full details of a recipe in the DB
@@ -206,7 +238,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/DetailRecipe'
+                  $ref: '#/components/schemas/Recipe'
         '400':
           description: bad input parameter
 
@@ -354,37 +386,43 @@ paths:
       description: A json object contains details about the recipes
       parameters:
         - in: query
-          name: Recipes name
-          description: Recipes name that the user want to search, the user can filter by cuisine, diet and 
-          required: true
+          name: query
+          description: Recipes name that the user want to search
+          required: false
           schema:
             type: string
         - in: query
-          name: number of recipes
+          name: number
           description: number of recipes to show after the search, the options are 5 10 15 and the default value is 5
           required: false
           schema:
             type: integer
-            format: int32
+            format: int64
             minimum: 5
         - in: query
-          name: Recipes diet
+          name: diet
           description: list of categories diet that the user can filter by them
           required: false
           schema:
             type: string
         - in: query
-          name: Recipes cuisine
+          name: cuisine
           description: list of categories cuisine that the user can filter by them
           required: false
           schema:
             type: string 
         - in: query
-          name: Recipes intolerance
+          name: intolerance
           description: list of categories intolerance that the user can filter by them
           required: false
           schema:
-            type: string            
+            type: string  
+        - in: query
+          name: sort
+          description: sort options to sort the search results by time or popularity
+          required: false
+          schema:
+            type: string        
       operationId: searchRecipesGuest
       responses:
         '200':
@@ -398,7 +436,6 @@ paths:
         '400':
           description: bad input parameter 
     
-        
 components:
   schemas:
     Login:
@@ -470,11 +507,6 @@ components:
       type: object
       description: Model containing recipe info
       properties:
-        image:
-          type: string
-          format: URL
-          description: URL for the recipe's image
-          example: https://jewishfoodexperience.com/wp-content/uploads/2013/05/falafel-677x279.jpg
         title:
           type: string
           description: name of recipe
@@ -483,11 +515,16 @@ components:
           type: number
           description: time to prepare the food
           example: 60
+        image:
+          type: string
+          format: URL
+          description: URL for the recipe's image
+          example: https://jewishfoodexperience.com/wp-content/uploads/2013/05/falafel-677x279.jpg
         aggregateLikes:
           type: number
           description: num of the likes
           example: 102
-        vegav/vegetarian:
+        vegan:
           type: boolean
           description: Vegan or not
           example: False
@@ -499,20 +536,37 @@ components:
           type: boolean
           description: True if gluten is free
           example: true
+        is_favorite:
+          type: boolean
+          description: True if the recipe is in favorites of the user
+          example: true
+        is_watched:
+          type: boolean
+          description: True if the user watshed this recipe
+          example: true
+        servings:
+          type: number
+          description: number of servings
+          example: 6
         
     DetailRecipe:
       type: object
       description: Model containing recipe info
       properties:
+        
+        title:
+          type: string
+          description: name of recipe
+          example: cheese cake
         image:
           type: string
           format: URL
           description: URL for the recipe's image
           example: https://jewishfoodexperience.com/wp-content/uploads/2013/05/falafel-677x279.jpg
-        title:
-          type: string
-          description: name of recipe
-          example: cheese cake
+        servings:
+          type: integer
+          description: number of serving
+          example: 6
         readyInMinutes:
           type: number
           description: time to prepare the food
@@ -521,7 +575,7 @@ components:
           type: number
           description: num of the likes
           example: 102
-        vegav/vegetarian:
+        vegav:
           type: boolean
           description: Vegan or not
           example: False
@@ -533,19 +587,15 @@ components:
           type: boolean
           description: True if gluten is free
           example: true
-        ingredients:
-          type: string
-          description: list of json of ingredients and quantity of the recipe
-          example:
-                  - amount: 2
-                    name: green onions
-                  - amount: 1
-                    name: non-fat milk
         instructions:
           type: string
           description: instructions how to make the recipe
           example: Four 8-ounce blocks of full-fat cream cheese are the base of this cheesecake. That’s 2 pounds. Make sure you’re buying the blocks of cream cheese and not cream cheese spread. There’s no diets allowed in cheesecake, so don’t pick up the reduced fat variety!
-        servings:
-          type: integer
-          description: number of serving
-          example: 6
+        ingredients:
+          type: string
+          description: list of json of ingredients and quantity of the recipe
+          example:
+                  - name: green onions
+                    amount: 2
+                  - name: non-fat milk
+                    amount: 1

@@ -13,20 +13,7 @@ const recipes_utils = require("./utils/recipes_utils");
 
 // ---------------------------API--------------------------------
 
-/**
- * This path returns a full details of chosen recipe
- */
- router.get('/FullRecipeDetailsAPI/:recipe_id', async (req,res,next) => {
-  try{
-    // const user_id = req.session.user_id;
-    const user_id = req.session.user_id;
-    const recipes_info = await recipes_utils.getFullRecipeDetails(user_id,req.params.recipe_id);
-  
-    res.status(200).send(recipes_info);
-  } catch(error){
-    next(error); 
-  }
-});
+
 
 
 /**
@@ -63,6 +50,20 @@ router.get("/:recipeId", async (req, res, next) => {
     res.send(m_recipes);
   } catch (error) {
     next(error);
+  }
+});
+/**
+ * This path returns a full details of chosen recipe
+ */
+ router.get('/FullRecipeDetailsAPI/:recipe_id', async (req,res,next) => {
+  try{
+    // const user_id = req.session.user_id;
+    const user_id = req.session.user_id;
+    const recipes_info = await recipes_utils.getFullRecipeDetails(user_id,req.params.recipe_id);
+  
+    res.status(200).send(recipes_info);
+  } catch(error){
+    next(error); 
   }
 });
 module.exports = router;
