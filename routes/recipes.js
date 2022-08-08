@@ -8,16 +8,9 @@ const MySql = require("../routes/utils/MySql");
 const DButils = require("../routes/utils/DButils");
 const recipes_utils = require("./utils/recipes_utils");
 
-
-// router.get("/", (req, res) => res.send("im in recipes"));
-
 // ---------------------------API--------------------------------
-
-
-
-
 /**
- * This path returns a full details of three random recipes
+ * This path returns a preview details of three random recipes
  */
  router.get("/random", async (req, res, next) => {
     try {
@@ -27,8 +20,9 @@ const recipes_utils = require("./utils/recipes_utils");
     next(error);
   }
 });
+
 /**
- * This path returns a full details of a recipe by its id
+ * This path returns a preview details of a recipe by its id
  */
 router.get("/:recipeId", async (req, res, next) => {
   try {
@@ -52,6 +46,7 @@ router.get("/:recipeId", async (req, res, next) => {
     next(error);
   }
 });
+
 /**
  * This path returns a full details of chosen recipe
  */
@@ -66,4 +61,5 @@ router.get("/:recipeId", async (req, res, next) => {
     next(error); 
   }
 });
+
 module.exports = router;

@@ -9,8 +9,6 @@ const DButils = require("../routes/utils/DButils");
 const user_utils = require("./utils/user_utils");
 const recipe_utils = require("./utils/recipes_utils");
 
-
-
 router.get("/", (req, res) => res.send("im in user"));
 
 /**
@@ -28,6 +26,7 @@ router.use(async function (req, res, next) {
     res.sendStatus(401);
   }
 });
+
 /**
  * This path returns a full details of chosen recipe
  */
@@ -43,7 +42,7 @@ router.use(async function (req, res, next) {
 });
 
 /**
- * This path returns a full details created recipe
+ * This path returns a preview details of the created recipes by the user_id
  */
 router.get('/CreateRecipe', async (req,res,next) => {
   try{
@@ -59,8 +58,6 @@ router.get('/CreateRecipe', async (req,res,next) => {
 router.get('/userid', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
-    // const recipes_info = await user_utils.getCreatedRecipes(user_id);
-  
     res.status(200).send(user_id+"");
   } catch(error){
     next(error); 
@@ -69,13 +66,10 @@ router.get('/userid', async (req,res,next) => {
 
 
 /**
- * This path allows to create a new recipe 
+ * This path allows to create and save a new recipe 
  */
 router.post("/CreateRecipe", async (req, res, next) => {
   try {
-    // parameters exists
-    // valid parameters
-    // username exists
     let recipe_details = {
       user_id: req.session.user_id,
       image: req.body.image,
@@ -87,15 +81,12 @@ router.post("/CreateRecipe", async (req, res, next) => {
       servings: req.body.servings,
       vegan: req.body.vegan,
       vegetarian: req.body.vegetarian,
-      // ingredients: req.body.ingredients -> "ingredients": [{"name": ,"amount":},{"name": ,"amount":}...]
       ingredients: req.body.ingredients
     }
-
     let recipes_titles = [];
     recipes_titles = await DButils.execQuery("SELECT title from recipes");
     if (recipes_titles.find((x) => x.title === recipe_details.title))
       throw { status: 409, message: "recipe title taken" };
-
     // add the new recipe
     await DButils.execQuery(
       `INSERT INTO recipes(user_id,title,image,servings,readyInMinutes,aggregateLikes,vegan,vegetarian, glutenFree,instructions) VALUES 
@@ -104,7 +95,6 @@ router.post("/CreateRecipe", async (req, res, next) => {
     );
     let recipes_id = [];
     recipes_id = await DButils.execQuery(`SELECT MAX(recipe_id) as recipe_id from recipes`);
-
     await recipe_details.ingredients.map((element) => DButils.execQuery(
       `INSERT INTO recipe_ingredients VALUES ('${recipes_id[0].recipe_id}', '${element.name}','${element.amount}')`
     ));
@@ -114,14 +104,13 @@ router.post("/CreateRecipe", async (req, res, next) => {
   }
 });
 
-
 /**
- * This path gets body with recipeId and save this recipe in the favorites list of the logged-in user
+ * This path uses recipe_id from the request body and save this recipe in the favorites table 
+ * by the user_id of the logged-in user
  */
 router.post('/favorites', async (req,res,next) => {
   try{
     const user_id = req.session.user_id; 
-    // const user_id = req.body.user_id;
     const recipe_id = req.body.recipe_id;
     let recipes_ids = [];
     recipes_ids = await DButils.execQuery(`SELECT recipe_id from favoriterecipes where user_id='${user_id}'`);
@@ -129,15 +118,13 @@ router.post('/favorites', async (req,res,next) => {
       await user_utils.markAsFavorite(user_id,recipe_id);
       res.status(200).send("The Recipe successfully saved as favorite");
     }
-      // throw { status: 500, message: "Already in favorites" };
-
     } catch(error){
       next(error);
   }
 })
 
 /**
- * This path returns the favorites recipes that were saved by the logged-in user
+ * This path returns the favorite recipes that were saved by the logged-in user
  */
  router.get('/favorites', async (req,res,next) => {
   try{
@@ -155,12 +142,12 @@ router.post('/favorites', async (req,res,next) => {
 
 
 /**
- * This path gets body with recipeId and save this recipe in the last watched list of the logged-in user
+ * This path uses recipe_id from the request body and save this recipe in the last watched table 
+ * by the user_id of the logged-in user
  */
  router.post('/lastWatched', async (req,res,next) => {
   try{
     const user_id = req.session.user_id; 
-    // const user_id = req.body.user_id;
     const recipe_id = req.body.recipe_id;
     let recipes_ids = [];
     recipes_ids = await DButils.execQuery(`SELECT recipe_id from last_recipes where user_id='${user_id}'`);
@@ -205,7 +192,7 @@ router.post('/favorites', async (req,res,next) => {
 });
 
 /**
- * This path returns the recipes that the user search by cusine, diet or intolerance
+ * This path returns the family recipes saves by the connected user
  */
  router.get('/familyRecipes', async (req,res,next) => {
   try{

@@ -15,12 +15,11 @@ app.get("/", (req, res) => {
   res.send("GET Hello World!");
 });
 
-
+/**
+ * This path saves a new user to the DB by the details in the request body
+ */
 router.post("/Register", async (req, res, next) => {
   try {
-    // parameters exists
-    // valid parameters
-    // username exists
     let user_details = {
       username: req.body.username,
       firstname: req.body.firstname,
@@ -28,14 +27,11 @@ router.post("/Register", async (req, res, next) => {
       country: req.body.country,
       password: req.body.password,
       email: req.body.email,
-      // profilePic: req.body.profilePic
     }
     let users = [];
     users = await DButils.execQuery("SELECT username from users");
-
     if (users.find((x) => x.username === user_details.username))
       throw { status: 409, message: "Username taken" };
-
     // add the new username
     let hash_password = bcrypt.hashSync(
       user_details.password,
@@ -51,34 +47,36 @@ router.post("/Register", async (req, res, next) => {
   }
 });
 
+/**
+ * This path allowes a registered user to login the website
+ */
 router.post("/Login", async (req, res, next) => {
   try {
     // check that username exists
     const users = await DButils.execQuery("SELECT username FROM users");
     if (!users.find((x) => x.username === req.body.username))
       throw { status: 401, message: "Username or Password incorrect" };
-
     // check that the password is correct
     const user = (
       await DButils.execQuery(
         `SELECT * FROM users WHERE username = '${req.body.username}'`
       )
     )[0];
-
+    //a package to encrypt the users password
     if (!bcrypt.compareSync(req.body.password, user.password)) {
       throw { status: 401, message: "Username or Password incorrect" };
     }
-
     // Set cookie to be the user_id from the DB (auto increment int number as user_id is set)
     req.session.user_id = user.user_id;
-
     // return cookie
     res.status(200).send({ message: "login succeeded", success: true });
   } catch (error) {
     next(error);
   }
 });
-
+/**
+ * This path allows a logged in user to logout the website
+ */
 router.post("/Logout", function (req, res) {
   req.session.reset(); // reset the session info --> send cookie when  req.session == undefined!!
   res.send({ success: true, message: "logout succeeded" });
