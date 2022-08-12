@@ -198,7 +198,6 @@ router.post('/favorites', async (req,res,next) => {
   try{
     const user_id = req.session.user_id;
     const recipes_info = await user_utils.getFamilyRecipes(user_id);
-  
     res.status(200).send(recipes_info);
   } catch(error){
     next(error); 

@@ -75,7 +75,8 @@ async function getCreatedRecipes(user_id){
  * @param {int} user_id 
  */
 async function getFamilyRecipes(user_id){
-    const recipes_details = await DButils.execQuery(`select recipe_id as id, title,image,readyInMinutes, aggregateLikes, vegan, vegetarian, glutenFree from recipes where user_id='${user_id}' and title like 'family%'`);
+    const recipes_details = await DButils.execQuery(`select family_recipes.recipe_id as id, title,image,readyInMinutes, aggregateLikes, vegan, vegetarian, glutenFree, family_member, when_prepering 
+    from recipes INNER JOIN family_recipes ON family_recipes.recipe_id=recipes.recipe_id where user_id='${user_id}' and title like 'family%';`);
     return recipes_details;
 }
 /**
