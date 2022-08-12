@@ -6,6 +6,8 @@ servers:
     url: https://virtserver.swaggerhub.com/kerendian/recipes_website_project/1.0.0
   - description: SwaggerHub API Auto Mocking
     url: https://virtserver.swaggerhub.com/lielbin1/API/1.0.0
+  - description: SwaggerHub API Auto Mocking
+    url: http://127.0.0.1:3000
 info:
   description: This is a API for Grandma's Recipes
   version: "1.0.0"

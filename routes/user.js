@@ -172,7 +172,7 @@ router.post('/favorites', async (req,res,next) => {
     let recipes_id_array = [];
     three_last_recipes_id.map((element) => recipes_id_array.push(element.recipe_id)); //extracting the recipe ids into array
     const results = await recipe_utils.getRecipesPreview(recipes_id_array,user_id);
-    res.status(200).send(results);
+    res.status(200).send(results.reverse());
   } catch(error){
     next(error); 
   }
