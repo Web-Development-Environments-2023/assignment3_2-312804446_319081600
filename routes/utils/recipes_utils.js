@@ -127,7 +127,7 @@ async function getFilteredSearchRecipes(query, number, cuisine, diet, intoleranc
     let searchRes = await getRecipesFromSearch(query, number, cuisine, diet, intolerance,sort) ;
     let filterdSearchRes = searchRes.results.filter((random)=>(random.analyzedInstructions.length != 0))
     if(filterdSearchRes.length < number - counter && searchRes.totalResults >= number){
-        counter++;
+        counter++
         return getFilteredSearchRecipes(query, number+1, cuisine, diet, intolerance,sort,user_id,counter);
     }
     return extractPreviewRecipeDetails(filterdSearchRes,user_id);
