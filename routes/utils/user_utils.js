@@ -67,7 +67,7 @@ async function checkIsWatched(user_id,recipe_id){
  * @param {int} user_id 
  */
 async function getCreatedRecipes(user_id){
-    const recipes_details = await DButils.execQuery(`select recipe_id as id, title,image,readyInMinutes, aggregateLikes, vegan, vegetarian, glutenFree from recipes where user_id='${user_id}' and title not like 'family%'`);
+    const recipes_details = await DButils.execQuery(`select recipe_id as id, title,image, servings, readyInMinutes, aggregateLikes, vegan, vegetarian, glutenFree from recipes where user_id='${user_id}' and title not like 'family%'`);
     return recipes_details;
 }
 /**
