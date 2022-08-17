@@ -85,7 +85,7 @@ async function getFamilyRecipes(user_id){
  */
 async function getFullRecipeDetails(recipe_id){
     const recipes_details = await DButils.execQuery(`select recipe_id as id, title,image,servings, readyInMinutes, aggregateLikes, vegan, vegetarian, glutenFree, instructions from recipes where recipe_id='${recipe_id}'`);
-    const recipes_ingredients = await DButils.execQuery(`select ingredient_name,amount from recipe_ingredients where recipe_id='${recipe_id}'`);
+    const recipes_ingredients = await DButils.execQuery(`select name,amount from recipe_ingredients where recipe_id='${recipe_id}'`);
     recipes_details[0]["extendedIngredients"] = recipes_ingredients;
     let is_favorite = await checkIsFavorite(recipe_id);
     let is_watched = await checkIsWatched(recipe_id);
